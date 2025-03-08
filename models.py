@@ -6,6 +6,7 @@ from datetime import datetime
 Base = declarative_base()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Many-to-many relationship between Users & Applications
 user_applications = Table(
     "user_applications",
     Base.metadata,
@@ -13,6 +14,7 @@ user_applications = Table(
     Column("application_id", Integer, ForeignKey("applications.id"), primary_key=True),
 )
 
+# User Model
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -31,6 +33,7 @@ class User(Base):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
+# Application Model
 class Application(Base):
     __tablename__ = "applications"
     id = Column(Integer, primary_key=True, index=True)
@@ -41,6 +44,7 @@ class Application(Base):
     users = relationship("User", secondary=user_applications, back_populates="applications")
     roles = relationship("Role", back_populates="application")
 
+# Role Model
 class Role(Base):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True, index=True)
@@ -51,6 +55,7 @@ class Role(Base):
     application = relationship("Application", back_populates="roles")
     users = relationship("UserRole", back_populates="role")
 
+# UserRole Model
 class UserRole(Base):
     __tablename__ = "user_roles"
     id = Column(Integer, primary_key=True, index=True)
